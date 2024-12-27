@@ -496,6 +496,7 @@ set page(
     )
     ,
     header-ascent: 1em,
+/*
     footer: move(dy: -64.5em, h(-2em) + text(font: "Yu Gothic", size: 6pt, "01") + v(0.3325em))
     + move(dy: -64.5em, h(-2em) + text(font: "Yu Gothic", size: 6pt, "02") + v(0.3325em))
     + move(dy: -64.5em, h(-2em) + text(font: "Yu Gothic", size: 6pt, "03") + v(0.3325em))
@@ -528,6 +529,7 @@ set page(
     + move(dy: -64.5em, h(-2em) + text(font: "Yu Gothic", size: 6pt, "30") + v(0.3325em))
     + move(dy: -64.5em, h(-2em) + text(font: "Yu Gothic", size: 6pt, "31") + v(0.3325em))
     + move(dy: -64.5em, h(-2em) + text(font: "Yu Gothic", size: 6pt, "32") + v(0.3325em))
+*/
     // footer-descent: 0pt,
     // background: none,
     // foreground: none
