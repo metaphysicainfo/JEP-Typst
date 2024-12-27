@@ -461,6 +461,8 @@ $
 show "？」": "？" + h(0.0001em) +"」"
 show "！」": "！" + h(0.0001em) +"」"
 // Header
+// let marginparwidth = 8em
+let marginparwidth = 0em
 set page(
   paper: "a4",
   // width: auto,
@@ -468,7 +470,7 @@ set page(
   // flipped: false,
   // この margin right の + 8em を削ると紙面全体に文章が置かれる
   // ただし header の box も削らねばならない
-  margin: (left: 31.2694445mm, right: 31.2694445mm + 8em, top: 31.2044445mm, bottom: 21.3344445mm),
+  margin: (left: 31.2694445mm, right: 31.2694445mm + marginparwidth, top: 31.2044445mm, bottom: 21.3344445mm),
   //  margin: (left: 31.2694445mm, right: 31.2694445mm, top: 31.2044445mm, bottom: 21.3344445mm),
   // ( 31.2694445 * 2  - 3.88 - 4.23 - 1.76) / 2
   // binding: auto,
@@ -478,7 +480,7 @@ set page(
   // number-align: center + bottom,
   header:
   // この box をコメントアウトすると文章と同じ幅のヘッダになる
-    box(width: 100% + 8em,
+    box(width: 100% + marginparwidth,
     par(spacing: 5pt)[
     #context{counter(page).display("1/1", both: true)}
     #h(1em)
