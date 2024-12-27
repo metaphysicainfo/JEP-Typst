@@ -1,16 +1,22 @@
 // 高校数学教材向け Typst テンプレート（私家版）
 // Typst 0.12.0
-// 2024-11-22
+// 2024-12-27
 // 日下部幽考
 // http://x.com/metaphysicainfo
 // https://www.metaphysica.info/tools/typst-template/
 // 
+// 
+// # 置換解除
+#let z = h(0pt)
 // # 先頭の段落字下げ
 #let firstindent = par(
   text(size: 0pt, "")
   ) + v(-1em-2.926pt)
 // # 囲みブロック設定
 #import "@preview/showybox:2.0.1":*
+// # 傍注
+#import "@preview/marge:0.1.0": sidenote
+#let sidenote = sidenote.with(padding: (left: 1.2em, right: 31.2694445mm))
 // # 引用
 #let blockquote(body) = showybox(
   breakable: true,
@@ -185,6 +191,12 @@
   weight: 500,
   "《談義》"
 )
+// # 談話
+#let hdgstatement = v(2em) + h(-1em) + text(
+  font: "Yu Gothic",
+  weight: 500,
+  "《談話》"
+)
 // # 例示
 #let hdgexempligratia = v(1em) + h(-1em) + text(
   font: "Yu Gothic",
@@ -284,9 +296,8 @@
   )
 )
 // # 式番号
-// # 引用時のみ式番号 https://qiita.com/tomoyatajika/items/b3130df6cc6193fd6018 は行間が壊れてしまった。
 // #set math.equation(numbering: "……①　　", number-align: right + bottom)
-#let eqno(body) = math.equation(block: true, numbering: "……①　　", number-align: right + bottom)[$#body$]
+#let eqno(body) = math.equation(block: true, numbering: "……①", number-align: right + bottom)[$#body$]
 #let inlinenumbering(body) = text(font: "New Computer Modern Math","……") + body
 #let eqnoreset = counter(math.equation).update(0)
 // # comma period
@@ -425,9 +436,15 @@ $
   $f(x)$, $0$, [⤴↗], $2$
 )
 */
+// 表中の縦幅数式（アドホック）
+#let tablemath(body) = pad(left: -4em, math.equation(block: true, body))
 // 式修飾
 #let marka(body) = $underbracket(body)$
 #let markb(body) = $underline(underbracket(body))$
+#let markc(body) = $underline(underline(underbracket(body)))$
+#let markatext(body) = h(-0.25em) + $underbracket(body)$ + h(-0.25em)
+#let markbtext(body) = h(-0.25em) + $underline(underbracket(body))$ + h(-0.25em)
+#let markctext(body) = h(-0.25em) + $underline(underline(underbracket(body)))$ + h(-0.25em)
 //#let markatext(body) = text(size: 9pt, $underbracket(body)$)
 //#let markbtext(body) = $underline(underbracket(body))$
 //
@@ -449,8 +466,10 @@ set page(
   // width: auto,
   // height: auto,
   // flipped: false,
-  margin: (x: 31.2694445mm, top: 31.2044445mm, bottom: 21.3344445mm),
-  //  margin: (left: 31.2694445mm, right: 31.2694445mm + 8em, top: 31.2044445mm, bottom: 21.3344445mm),
+  // この margin right の + 8em を削ると紙面全体に文章が置かれる
+  // ただし header の box も削らねばならない
+  margin: (left: 31.2694445mm, right: 31.2694445mm + 8em, top: 31.2044445mm, bottom: 21.3344445mm),
+  //  margin: (left: 31.2694445mm, right: 31.2694445mm, top: 31.2044445mm, bottom: 21.3344445mm),
   // ( 31.2694445 * 2  - 3.88 - 4.23 - 1.76) / 2
   // binding: auto,
   // columns: 1,
@@ -458,6 +477,8 @@ set page(
   // numbering: none,
   // number-align: center + bottom,
   header:
+  // この box をコメントアウトすると文章と同じ幅のヘッダになる
+    box(width: 100% + 8em,
     par(spacing: 5pt)[
     #context{counter(page).display("1/1", both: true)}
     #h(1em)
@@ -470,6 +491,7 @@ set page(
       stroke: 0.4pt
       )
     #v(5pt)]
+    )
     ,
     header-ascent: 1em,
     footer: move(dy: -64.5em, h(-2em) + text(font: "Yu Gothic", size: 6pt, "01") + v(0.3325em))
@@ -626,8 +648,19 @@ show "omitted": text(font: "Yu Gothic",weight: 400, "［省略］")
 show math.frac: math.display
 show math.integral: math.display
 // # 数式設定
-show math.equation: set text(font: ("New Computer Modern Math","Yu Mincho"), size: 12pt)
-//show math.equation: set text(font: ("New Computer Modern Math","Yu Mincho"))
+show math.equation: set text(font: ("New Computer Modern Math","Yu Mincho"), size: 11pt)
+// show math.equation: set text(font: ("New Computer Modern Math","Yu Mincho"))
+set math.equation(numbering: "……①", number-align: right + bottom)
+// https://forum.typst.app/t/how-to-conditionally-enable-equation-numbering-for-labeled-equations/977/13
+show math.equation: it => {
+  if it.block and not it.has("label") [
+    #counter(math.equation).update(v => v - 1)
+    #math.equation(it.body, block: true, numbering: none)#label("")
+  ] else {
+    it
+  }  
+}
+set ref(supplement: none)
 set math.cases(gap: 1em)
 // # 左寄せのうえ字下げる
 show math.equation.where(block: true): set block(breakable: true)
@@ -638,6 +671,11 @@ show: shorthands.with(
   ($+-$, $plus.minus$),
   ($-+$, $minus.plus$),
 )
+// # 凹凸矢印
+show "→↑": "⤴"
+show "→↓": "⤵"
+show "↓→": box(rotate(90deg)[⤴])
+show "↑→": box(rotate(-90deg)[⤵])
 // # QED
 show "QED": $qed$
 // # therefore because
@@ -651,14 +689,42 @@ show math.Re: math.upright("Re") + h(2pt)
 show math.Im: math.upright("Im") + h(2pt)
 // # 数ベクトルの括弧を角括弧にする
 set math.vec(delim: "[")
+// https://forum.typst.app/t/how-to-redefine-the-default-frac-behavior-while-avoiding-circular-references/2195?u=matunaga_touma
+// # 分数調整
+let Fixfrac(num, sur) = math.frac(
+[#box(baseline: 0.08em,[$#h(0.16em) #num #h(0.16em)$])],
+[$#h(0.16em) #sur #h(0.16em)$],
+)
+show math.frac: it => {
+  if it.has("label") and it.label == <stop-frac-recursion> {
+    it
+  } else {
+    [#Fixfrac(it.num, it.denom) <stop-frac-recursion> ]
+  }
+}
+// # 根号調整
+let Fixroot(index, radicand) = math.root(
+[$#index$],
+[$#radicand#invisibleheight#h(0.16em)$],
+)
+show math.root: it => {
+  if it.has("label") and it.label == <stop-frac-recursion> {
+    it
+  } else {
+    [#Fixroot(it.index, it.radicand) <stop-frac-recursion> ]
+  }
+}
 // # タイトル見出し
 show "headerstudy": h(-0.75em) + "［学習］"
 show "headerfeature": h(-0.75em) + "［特集］"
 show "headerquotation": h(-0.75em) + "［記事］"
 show "headerexercise": h(-0.75em) + "［演習］"
+show "headermemo": h(-0.75em) + "［覚書］"
+// https://qiita.com/zr_tex8r/items/a9d82669881d8442b574
+set text(spacing: 0.25em)
 // https://qiita.com/tomoyatajika/items/47e675027ce8995759af
 // Typstで数式の前後にスペースを入れる
-show math.equation.where(block:false): it => [#text(font:"Yu Mincho", size: 11pt)[ ]#it#text(font:"Yu Mincho", size: 11pt)[ ]]
+//show math.equation.where(block:false): it => [#text(font:"Yu Mincho", size: 11pt)[ ]#it#text(font:"Yu Mincho", size: 11pt)[ ]]
 firstindent + Document
 }
 /*
