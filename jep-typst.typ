@@ -432,8 +432,12 @@ $
   columns: 4,
   align: center,
   stroke: none,  
+  table.vline(x: 1, start: 0),
+  table.hline(),
   $x$, $1$, $...$, $2$,
-  $f(x)$, $0$, [⤴↗], $2$
+  table.hline(),
+  $f(x)$, $0$, [→↑↗], $2$,
+  table.hline(),
 )
 */
 // 表中の縦幅数式（アドホック）
@@ -707,17 +711,20 @@ show math.frac: it => {
   }
 }
 // # 根号調整
+// sqrt の前が詰まってしまうので見送り
+/*
 let Fixroot(index, radicand) = math.root(
 [$#index$],
-[$#radicand#invisibleheight#h(0.16em)$],
+[$#radicand$#h(0.08em)],
 )
 show math.root: it => {
-  if it.has("label") and it.label == <stop-frac-recursion> {
+  if it.has("label") and it.label == <stop-root-recursion> {
     it
   } else {
-    [#Fixroot(it.index, it.radicand) <stop-frac-recursion> ]
+    [#Fixroot(it.index, it.radicand) <stop-root-recursion> ]
   }
 }
+*/
 // # タイトル見出し
 show "headerstudy": h(-0.75em) + "［学習］"
 show "headerfeature": h(-0.75em) + "［特集］"
